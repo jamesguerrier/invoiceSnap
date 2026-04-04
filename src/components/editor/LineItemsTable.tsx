@@ -19,8 +19,8 @@ export const LineItemsTable: React.FC = () => {
         </Button>
       </div>
 
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="border border-slate-200 rounded-xl overflow-auto bg-white shadow-sm max-h-[450px] md:max-h-none custom-scrollbar">
+        <table className="w-full text-left border-collapse min-w-[600px] md:min-w-0">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[40%]">Description</th>

@@ -93,10 +93,10 @@ export function InvoiceForm() {
       </div>
 
       {/* Invoice Details */}
-      <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 max-h-[350px] overflow-y-auto md:max-h-none">
         <div className="flex items-center gap-2 text-slate-800 font-semibold mb-2">
           <FileText size={18} />
-          <h2>Invoice Meta</h2>
+          <h2 id="invoice-meta-title">Invoice Meta</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Input
