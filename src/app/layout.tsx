@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { InvoiceProvider } from "@/lib/store/InvoiceContext";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+// Mock font variables since build env is offline and cannot fetch from Google Fonts
+const inter = { variable: "font-inter" };
+const outfit = { variable: "font-outfit" };
 
 export const metadata: Metadata = {
   title: "InvoiceSnap — Professional Invoices in 60 Seconds",
@@ -18,10 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${outfit.variable} font-sans antialiased text-slate-900 bg-slate-50`}>
-        <InvoiceProvider>
-          {children}
-        </InvoiceProvider>
+      <body className={`${inter.variable} ${outfit.variable} font-sans text-slate-900 antialiased`}>
+        <AuthProvider>
+          <InvoiceProvider>
+            {children}
+          </InvoiceProvider>
+        </AuthProvider>
       </body>
     </html>
   );

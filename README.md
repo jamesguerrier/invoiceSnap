@@ -31,7 +31,7 @@ Moving from "Guest Mode" to a personalized financial workspace.
 - **Smart History**: View all invoices associated with a specific client.
 
 #### 3. Cloud Database
-- **Database Setup**: Connect [Supabase](https://supabase.com) (PostgreSQL) or Prisma.
+- **Database Setup**: Connect (PostgreSQL)  Prisma.
 - **Draft Syncing**: Sync in-progress invoices across devices (cross-device `localStorage` fallback).
 - **Archival**: A dedicated "Invoice List" view where users can download past PDFs.
 

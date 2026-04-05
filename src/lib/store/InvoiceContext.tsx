@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { InvoiceData, InvoiceTotals, LineItem } from "../types/invoice";
 import { calculateInvoiceTotals } from "../utils/calculate-totals";
+import { useSearchParams } from "next/navigation";
+import { getClientById } from "../actions";
 
 interface InvoiceContextType {
   invoiceData: InvoiceData;
@@ -14,6 +16,7 @@ interface InvoiceContextType {
   addItem: () => void;
   removeItem: (id: string) => void;
   updateItem: (id: string, field: keyof LineItem, value: string | number) => void;
+  setInvoiceData: React.Dispatch<React.SetStateAction<InvoiceData>>;
 }
 
 const STORAGE_KEY = "invoice-snap-draft";
@@ -47,10 +50,30 @@ const InvoiceContext = createContext<InvoiceContextType | undefined>(undefined);
 export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [invoiceData, setInvoiceData] = useState<InvoiceData>(defaultInvoice);
   const [isInitialized, setIsInitialized] = useState(false);
+  const searchParams = useSearchParams();
+  const clientIdParam = searchParams.get("clientId");
 
-  // Load from localStorage on mount
+  // Load from localStorage or URL client on mount
   useEffect(() => {
     const init = async () => {
+      // 1. Check if a clientId is provided in the URL
+      if (clientIdParam) {
+        const client = await getClientById(clientIdParam);
+        if (client) {
+          setInvoiceData(prev => ({
+            ...prev,
+            client: {
+              name: client.name,
+              email: client.email,
+              address: client.address || "",
+            }
+          }));
+          setIsInitialized(true);
+          return;
+        }
+      }
+
+      // 2. Otherwise load from localStorage
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {
@@ -75,7 +98,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     init();
-  }, [setInvoiceData]);
+  }, [clientIdParam]); // Rely on clientIdParam change
 
   // Save to localStorage with debounce
   useEffect(() => {
@@ -158,6 +181,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addItem,
         removeItem,
         updateItem,
+        setInvoiceData,
       }}
     >
       {children}

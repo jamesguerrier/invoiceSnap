@@ -4,16 +4,37 @@ import React, { useEffect, useState } from "react";
 import { useInvoice } from "@/lib/store/InvoiceContext";
 import { Input, Button } from "@/components/ui";
 import { LineItemsTable } from "./LineItemsTable";
-import { User, Building, FileText, Settings, Download, Palette } from "lucide-react";
+import { User, Building, FileText, Palette, Save, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { saveInvoice } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export function InvoiceForm() {
   const { invoiceData, updateSender, updateClient, updateDetails, totals } = useInvoice();
   const [hasMounted, setHasMounted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
+  const router = useRouter();
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  const handleSaveDraft = async () => {
+    try {
+      setIsSaving(true);
+      setSaveStatus("idle");
+      await saveInvoice(invoiceData);
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to save draft:", error);
+      setSaveStatus("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!hasMounted) {
     return <div className="h-screen flex items-center justify-center text-slate-400">Loading editor...</div>;
@@ -148,6 +169,36 @@ export function InvoiceForm() {
           </p>
         </div>
       </div>
+
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-slate-200">
+        <Button 
+          size="lg" 
+          onClick={handleSaveDraft}
+          disabled={isSaving}
+          className={`w-full sm:w-auto gap-2 h-14 px-8 rounded-2xl font-bold transition-all shadow-xl ${
+            saveStatus === "success" 
+              ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100" 
+              : saveStatus === "error"
+              ? "bg-red-600 hover:bg-red-700 shadow-red-100"
+              : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100"
+          }`}
+        >
+          {isSaving ? (
+            <Loader2 className="animate-spin" size={20} />
+          ) : saveStatus === "success" ? (
+            <CheckCircle2 size={20} />
+          ) : saveStatus === "error" ? (
+            <AlertCircle size={20} />
+          ) : (
+            <Save size={20} />
+          )}
+          {isSaving ? "Saving..." : saveStatus === "success" ? "Saved to Dashboard" : saveStatus === "error" ? "Failed to Save" : "Save to Draft"}
+        </Button>
+        <p className="text-xs text-slate-400 font-medium max-w-[200px] text-center sm:text-left leading-relaxed">
+          Invoices saved as draft will appear in your dashboard and the client will be added to your contacts.
+        </p>
+      </div>
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Menu, X, Sparkles, BookOpen, CreditCard, HelpCircle, MessageSquare } from "lucide-react";
+import { Menu, X, Sparkles, BookOpen, CreditCard, HelpCircle, MessageSquare, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui";
@@ -12,10 +12,10 @@ export function MobileNav() {
   const toggle = () => setIsOpen(!isOpen);
 
   const menuItems = [
-    { title: "Invoice Editor", href: "/", icon: <BookOpen size={20} /> },
-    { title: "Pricing Plans", href: "/pricing", icon: <CreditCard size={20} /> },
+    { title: "Invoice Editor", href: "/new", icon: <BookOpen size={20} /> },
+    { title: "Pricing Plans", href: "#pricing", icon: <CreditCard size={20} /> },
+    { title: "My Dashboard", href: "/dashboard", icon: <LayoutDashboard size={20} /> },
     { title: "Help & Support", href: "#", icon: <HelpCircle size={20} /> },
-    { title: "Feedback", href: "#", icon: <MessageSquare size={20} /> },
   ];
 
   return (
