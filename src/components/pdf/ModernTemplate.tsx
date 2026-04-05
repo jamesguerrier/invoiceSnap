@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 import { InvoiceData, InvoiceTotals } from "@/lib/types/invoice";
 
@@ -202,6 +203,25 @@ export const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, totals }) 
           <View style={{ marginTop: 40 }}>
             <Text style={styles.label}>Notes</Text>
             <Text style={{ color: "#64748b", lineHeight: 1.5 }}>{data.notes}</Text>
+          </View>
+        )}
+
+        {/* Payment QR Codes */}
+        {data.paymentLinks && data.paymentLinks.length > 0 && (
+          <View style={{ marginTop: 30, flexDirection: "row", gap: 30 }}>
+            {data.paymentLinks.map((link) => 
+              link.showQr && link.url ? (
+                <View key={link.id} style={{ alignItems: "center" }}>
+                  <Text style={{ fontSize: 10, marginBottom: 8, color: "#1e293b", fontWeight: "bold" }}>
+                    {link.label || "Payment Link"}
+                  </Text>
+                  <Image 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link.url)}`}
+                    style={{ width: 80, height: 80 }}
+                  />
+                </View>
+              ) : null
+            )}
           </View>
         )}
 

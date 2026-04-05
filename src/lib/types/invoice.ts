@@ -6,7 +6,15 @@ export interface LineItem {
   taxRate: number;
 }
 
+export interface PaymentLink {
+  id: string;
+  label: string;
+  url: string;
+  showQr: boolean;
+}
+
 export interface InvoiceData {
+  id?: string;
   sender: {
     name: string;
     email: string;
@@ -27,6 +35,7 @@ export interface InvoiceData {
   };
   items: LineItem[];
   notes: string;
+  paymentLinks?: PaymentLink[];
 }
 
 export interface InvoiceTotals {

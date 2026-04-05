@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useMemo } from "
 import { InvoiceData, InvoiceTotals, LineItem } from "../types/invoice";
 import { calculateInvoiceTotals } from "../utils/calculate-totals";
 import { useSearchParams } from "next/navigation";
-import { getClientById } from "../actions";
+import { getClientById, getInvoiceById } from "../actions";
 
 interface InvoiceContextType {
   invoiceData: InvoiceData;
@@ -16,6 +16,9 @@ interface InvoiceContextType {
   addItem: () => void;
   removeItem: (id: string) => void;
   updateItem: (id: string, field: keyof LineItem, value: string | number) => void;
+  addPaymentLink: () => void;
+  updatePaymentLink: (id: string, field: string, value: string | boolean) => void;
+  removePaymentLink: (id: string) => void;
   setInvoiceData: React.Dispatch<React.SetStateAction<InvoiceData>>;
 }
 
@@ -52,10 +55,41 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isInitialized, setIsInitialized] = useState(false);
   const searchParams = useSearchParams();
   const clientIdParam = searchParams.get("clientId");
+  const invoiceIdParam = searchParams.get("invoiceId");
 
   // Load from localStorage or URL client on mount
   useEffect(() => {
     const init = async () => {
+      // 0. Check if an invoiceId is provided for explicit editing
+      if (invoiceIdParam) {
+        const inv = await getInvoiceById(invoiceIdParam);
+        if (inv) {
+          setInvoiceData(prev => ({
+            ...prev,
+            id: inv._id,
+            client: {
+              name: inv.clientId?.name || "",
+              email: inv.clientId?.email || "",
+              address: inv.clientId?.address || "",
+            },
+            details: {
+              ...prev.details,
+              invoiceNumber: inv.invoiceNumber,
+              issueDate: inv.issueDate,
+              dueDate: inv.dueDate,
+              currency: inv.currency || "USD",
+            },
+            items: inv.items?.map((item: any) => ({ 
+              ...item, 
+              id: item._id?.toString() || crypto.randomUUID() 
+            })) || [],
+            notes: inv.notes || "",
+          }));
+          setIsInitialized(true);
+          return;
+        }
+      }
+
       // 1. Check if a clientId is provided in the URL
       if (clientIdParam) {
         const client = await getClientById(clientIdParam);
@@ -98,7 +132,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     init();
-  }, [clientIdParam]); // Rely on clientIdParam change
+  }, [clientIdParam, invoiceIdParam]); // Rely on parameters change
 
   // Save to localStorage with debounce
   useEffect(() => {
@@ -169,6 +203,36 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setInvoiceData((prev) => ({ ...prev, notes: value }));
   };
 
+  const addPaymentLink = () => {
+    setInvoiceData((prev) => {
+      const currentLinks = prev.paymentLinks || [];
+      if (currentLinks.length >= 2) return prev; // max 2
+      return {
+        ...prev,
+        paymentLinks: [
+          ...currentLinks,
+          { id: Math.random().toString(36).substr(2, 9), label: "", url: "", showQr: true }
+        ],
+      };
+    });
+  };
+
+  const updatePaymentLink = (id: string, field: string, value: string | boolean) => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      paymentLinks: prev.paymentLinks?.map((link) =>
+        link.id === id ? { ...link, [field]: value } : link
+      ),
+    }));
+  };
+
+  const removePaymentLink = (id: string) => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      paymentLinks: prev.paymentLinks?.filter((link) => link.id !== id),
+    }));
+  };
+
   return (
     <InvoiceContext.Provider
       value={{
@@ -181,6 +245,9 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addItem,
         removeItem,
         updateItem,
+        addPaymentLink,
+        updatePaymentLink,
+        removePaymentLink,
         setInvoiceData,
       }}
     >

@@ -1,6 +1,6 @@
 import { getInvoices, deleteInvoice, getDownloadStatus, togglePlan, getDashboardStats } from "@/lib/actions";
 import Link from "next/link";
-import { FileText, Plus, Trash2, Zap, Crown, TrendingUp, Users, Receipt, ArrowUpRight } from "lucide-react";
+import { FileText, Plus, Trash2, Zap, Crown, TrendingUp, Users, Receipt, ArrowUpRight, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -162,6 +162,11 @@ export default async function DashboardPage() {
                       </td>
                       <td className="py-5 px-6 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link href={`/new?invoiceId=${inv._id}`}>
+                            <button className="text-slate-400 hover:text-indigo-500 p-2 rounded-lg hover:bg-indigo-50 transition-all">
+                              <Edit2 size={16} />
+                            </button>
+                          </Link>
                           <form action={async () => {
                             "use server";
                             await deleteInvoice(inv._id);

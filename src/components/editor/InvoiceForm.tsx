@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useInvoice } from "@/lib/store/InvoiceContext";
 import { Input, Button } from "@/components/ui";
 import { LineItemsTable } from "./LineItemsTable";
+import { PaymentLinksSetting } from "./PaymentLinksSetting";
 import { User, Building, FileText, Palette, Save, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { saveInvoice } from "@/lib/actions";
@@ -169,6 +170,8 @@ export function InvoiceForm() {
           </p>
         </div>
       </div>
+
+      <PaymentLinksSetting />
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 border-t border-slate-200">

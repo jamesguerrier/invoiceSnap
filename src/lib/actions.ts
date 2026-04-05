@@ -159,20 +159,47 @@ export async function saveInvoice(data: any) {
     await dbClient.save();
   }
 
-  // 2. Create Invoice
-  const invoice = await Invoice.create({
-    invoiceNumber: details.invoiceNumber,
-    issueDate: details.issueDate,
-    dueDate: details.dueDate,
-    currency: details.currency,
-    userId: sessionUser._id,
-    clientId: dbClient._id,
-    items: items,
-    notes: notes,
-  });
+  // 2. Upsert Invoice
+  let invoice;
+  if (data.id) {
+    // Update existing invoice
+    invoice = await Invoice.findOneAndUpdate(
+      { _id: data.id, userId: sessionUser._id },
+      {
+        invoiceNumber: details.invoiceNumber,
+        issueDate: details.issueDate,
+        dueDate: details.dueDate,
+        currency: details.currency,
+        clientId: dbClient._id,
+        items: items,
+        notes: notes,
+      },
+      { new: true }
+    );
+  } else {
+    // Create new invoice
+    invoice = await Invoice.create({
+      invoiceNumber: details.invoiceNumber,
+      issueDate: details.issueDate,
+      dueDate: details.dueDate,
+      currency: details.currency,
+      userId: sessionUser._id,
+      clientId: dbClient._id,
+      items: items,
+      notes: notes,
+    });
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/clients");
+  return JSON.parse(JSON.stringify(invoice));
+}
+
+export async function getInvoiceById(id: string) {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) return null;
+
+  const invoice = await Invoice.findOne({ _id: id, userId: sessionUser._id }).populate("clientId");
   return JSON.parse(JSON.stringify(invoice));
 }
 
