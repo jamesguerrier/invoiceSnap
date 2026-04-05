@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { 
   Sparkles, 
@@ -116,10 +117,15 @@ export default function LandingPage() {
                    <div className="w-3 h-3 rounded-full bg-slate-600"></div>
                    <div className="w-3 h-3 rounded-full bg-slate-600"></div>
                 </div>
-                <div className="flex items-center justify-center h-full">
-                   <div className="w-[80%] h-[80%] bg-white rounded shadow-2xl flex items-center justify-center">
-                      <span className="text-slate-200 text-4xl font-bold opacity-10 uppercase tracking-[1em]">Preview</span>
-                   </div>
+                <div className="flex h-full w-full pt-10">
+                   <Image 
+                     src="/preview-image.png" 
+                     alt="InvoiceSnap Application Preview" 
+                     width={1200} 
+                     height={800} 
+                     className="w-full h-auto object-cover rounded-tl-xl rounded-tr-xl shadow-2xl" 
+                     priority
+                   />
                 </div>
              </div>
           </motion.div>

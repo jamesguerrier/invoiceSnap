@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 
+import { PDFDownloadButton } from "@/components/preview/PDFDownloadButton";
+
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -80,9 +82,7 @@ export function MobileNav() {
               </nav>
 
               <div className="p-6 border-t border-slate-100 space-y-4">
-                <Button className="w-full py-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 h-auto">
-                  Create Free Invoice
-                </Button>
+                <PDFDownloadButton className="w-full py-6 rounded-xl h-auto" />
                 <p className="text-center text-[11px] text-slate-400 uppercase tracking-widest font-semibold">
                   Secure & Instant
                 </p>

@@ -54,7 +54,9 @@ export function EditorClient({ session }: EditorClientProps) {
           <div className="h-6 w-px bg-slate-200 hidden md:block mx-1"></div>
 
           <div className="flex items-center gap-3">
-            <PDFDownloadButton />
+            <div className="hidden md:block">
+              <PDFDownloadButton />
+            </div>
             
             {!session?.user ? (
               <Link href="/login">
